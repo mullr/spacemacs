@@ -174,13 +174,28 @@ the focus."
         "mtt" 'spacemacs/cider-test-run-focused-test
 
         "mdi" 'cider-inspect
-        "mdb" 'cider-debug-defun-at-point)
+        "mdb" 'cider-debug-defun-at-point
+
+        "mTv" 'cider-toggle-trace-var
+        "mTn" 'cider-toggle-trace-ns
+
+        "mm1" 'cider-macroexpand-1
+        "mma" 'cider-macroexpand-all
+        "mme" 'cider-macroexpand-expr
+        "mm!" 'cider-macroexpand-1-inplace
+        "mmA" 'cider-macroexpand-all-inplace
+        "mmE" 'cider-macroexpand-expr-inplace
+        "mmu" 'cider-macroexpand-undo
+        "mmg" 'cider-macroexpand-again
+
+        "mDf" 'cider-debug-defun-at-point
+        )
       (when clojure-enable-fancify-symbols
         (clojure/fancify-symbols 'cider-repl-mode)))
 
     (when (configuration-layer/package-usedp 'evil-jumper)
       (defadvice cider-jump-to-var (before add-evil-jump activate)
-        (evil-set-jump)))))
+        (evil-set-jump))))
 
 (defun clojure/init-cider-eval-sexp-fu ()
   (eval-after-load 'eval-sexp-fu
@@ -193,44 +208,83 @@ the focus."
       (add-hook 'clojure-mode-hook 'clj-refactor-mode)
       :config
       (progn
+        (defun clj-refactor-menu ()
+          (interactive)
+          (let* ((refactorings '(("add declaration"               . (lambda () (cljr-add-declaration)))
+                                ("add import to ns"               . (lambda () (cljr-add-import-to-ns)))
+                                ("add require to ns"              . (lambda () (cljr-add-require-to-ns)))
+                                ("add use to ns"                  . (lambda () (cljr-add-use-to-ns)))
+                                ("cycle collection type"          . (lambda () (cljr-cycle-coll)))
+                                ("cycle if / if-not"              . (lambda () (cljr-cycle-if)))
+                                ("cycle privacy"                  . (lambda () (cljr-cycle-privacy)))
+                                ("cycle string / keyword"         . (lambda () (cljr-cycle-stringlike)))
+                                ("destructure keys"               . (lambda () (cljr-destructure-keys)))
+                                ("introduce-let"                  . (lambda () (cljr-introduce-let)))
+                                ("expand let"                     . (lambda () (cljr-expand-let)))
+                                ("move to let"                    . (lambda () (cljr-move-to-let)))
+                                ("move form"                      . (lambda () (cljr-move-form)))
+                                ("find usages"                    . (lambda () (cljr-find-usages)))
+                                ("promote function"               . (lambda () (cljr-promote-function)))
+                                ("project cleaner"                . (lambda () (cljr-project-clean)))
+                                ("remove debug fns"               . (lambda () (cljr-remove-debug-fns)))
+                                ("rename file"                    . (lambda () (cljr-rename-file)))
+                                ("rename symbol"                  . (lambda () (cljr-rename-symbol)))
+                                ("remove unused requires"         . (lambda () (cljr-remove-unused-requires)))
+                                ("replace :use with :refer :all"  . (lambda () (cljr-replace-use)))
+                                ("sort ns form"                   . (lambda () (cljr-sort-ns)))
+                                ("stop referring"                 . (lambda () (cljr-stop-referring)))
+                                ("sort project dependencies"      . (lambda () (cljr-sort-project-dependencies)))
+                                ("thread"                         . (lambda () (cljr-thread)))
+                                ("thread first all"               . (lambda () (cljr-thread-first-all)))
+                                ("thread last all"                . (lambda () (cljr-thread-last-all)))
+                                ("unwind"                         . (lambda () (cljr-unwind)))
+                                ("unwind all"                     . (lambda () (cljr-unwind-all)))))
+                 (selected-refactoring-name (ido-completing-read "Refactoring:" refactorings))
+                 (refactoring-fn (cdr (assoc selected-refactoring-name refactorings))))
+            (funcall refactoring-fn)))
+
         (cljr-add-keybindings-with-prefix "C-c C-f")
+        (evil-leader/set-key-for-mode 'clojure-mode
+          "mr" 'clj-refactor-menu)
         ;; not supported for now
         ;; (spacemacs/declare-prefix "mr" "clj-refactor")
-        (evil-leader/set-key-for-mode 'clojure-mode
-          "mrad" 'cljr-add-declaration
-          "mrai" 'cljr-add-import-to-ns
-          "mram" 'cljr-add-missing-libspec
-          "mrap" 'cljr-add-project-dependency
-          "mrar" 'cljr-add-require-to-ns
-          "mrau" 'cljr-add-use-to-ns
-          "mrcc" 'cljr-cycle-coll
-          "mrci" 'cljr-cycle-if
-          "mrcn" 'cljr-clean-ns
-          "mrcp" 'cljr-cycle-privacy
-          "mrdk" 'cljr-destructure-keys
-          "mref" 'cljr-extract-function
-          "mrel" 'cljr-expand-let
-          "mrfu" 'cljr-find-usages
-          "mrhd" 'cljr-hotload-dependency
-          "mril" 'cljr-introduce-let
-          "mrmf" 'cljr-move-form
-          "mrml" 'cljr-move-to-let
-          "mrpc" 'cljr-project-clean
-          "mrpf" 'cljr-promote-function
-          "mrrd" 'cljr-remove-debug-fns
-          "mrrf" 'cljr-rename-file
-          "mrrl" 'cljr-remove-let
-          "mrrr" 'cljr-remove-unused-requires
-          "mrrs" 'cljr-rename-symbol
-          "mrru" 'cljr-replace-use
-          "mrsn" 'cljr-sort-ns
-          "mrsp" 'cljr-sort-project-dependencies
-          "mrsr" 'cljr-stop-referring
-          "mrtf" 'cljr-thread-first-all
-          "mrth" 'cljr-thread
-          "mrtl" 'cljr-thread-last-all
-          "mrua" 'cljr-unwind-all
-          "mruw" 'cljr-unwind))))
+        ;; (evil-leader/set-key-for-mode 'clojure-mode
+        ;;   "mrad" 'cljr-add-declaration
+        ;;   "mrai" 'cljr-add-import-to-ns
+        ;;   "mram" 'cljr-add-missing-libspec
+        ;;   "mrap" 'cljr-add-project-dependency
+        ;;   "mrar" 'cljr-add-require-to-ns
+        ;;   "mrau" 'cljr-add-use-to-ns
+        ;;   "mrcc" 'cljr-cycle-coll
+        ;;   "mrci" 'cljr-cycle-if
+        ;;   "mrcn" 'cljr-clean-ns
+        ;;   "mrcp" 'cljr-cycle-privacy
+        ;;   "mrdk" 'cljr-destructure-keys
+        ;;   "mref" 'cljr-extract-function
+        ;;   "mrel" 'cljr-expand-let
+        ;;   "mrfu" 'cljr-find-usages
+        ;;   "mrhd" 'cljr-hotload-dependency
+        ;;   "mril" 'cljr-introduce-let
+        ;;   "mrmf" 'cljr-move-form
+        ;;   "mrml" 'cljr-move-to-let
+        ;;   "mrpc" 'cljr-project-clean
+        ;;   "mrpf" 'cljr-promote-function
+        ;;   "mrrd" 'cljr-remove-debug-fns
+        ;;   "mrrf" 'cljr-rename-file
+        ;;   "mrrl" 'cljr-remove-let
+        ;;   "mrrr" 'cljr-remove-unused-requires
+        ;;   "mrrs" 'cljr-rename-symbol
+        ;;   "mrru" 'cljr-replace-use
+        ;;   "mrsn" 'cljr-sort-ns
+        ;;   "mrsp" 'cljr-sort-project-dependencies
+        ;;   "mrsr" 'cljr-stop-referring
+        ;;   "mrtf" 'cljr-thread-first-all
+        ;;   "mrth" 'cljr-thread
+        ;;   "mrtl" 'cljr-thread-last-all
+        ;;   "mrua" 'cljr-unwind-all
+        ;;   "mruw" 'cljr-unwind)
+
+        )))
 
 (defun clojure/init-clojure-mode ()
   (use-package clojure-mode
