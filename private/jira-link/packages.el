@@ -10,13 +10,10 @@
 ;;
 ;;; License: GPLv3
 
-(defvar jira-link-packages
-  '(button-lock popup)
-  "List of all packages to install and/or initialize. Built-in packages
-which require an initialization must be listed explicitly in the list.")
+(setq jira-link-packages
+  '(button-lock popup))
 
-(defvar jira-link-excluded-packages '()
-  "List of packages to exclude.")
+(setq jira-link-excluded-packages '())
 
 (defun jira-link/init-button-lock ()
   "Initialize button-lock"

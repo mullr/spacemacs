@@ -10,15 +10,15 @@
 ;;
 ;;; License: GPLv3
 
-(defvar jira-link-pre-extensions
+(setq jira-link-pre-extensions
   '(
     ;; pre extension jira-links go here
-    )
-  "List of all extensions to load before the packages.")
+    ))
 
-(defvar jira-link-post-extensions
-  '(jira-link)
-  "List of all extensions to load after the packages.")
+
+(setq jira-link-post-extensions
+  '(jira-link))
+
 
 ;; For each extension, define a function jira-link/init-<extension-jira-link>
 ;;

@@ -10,12 +10,9 @@
 ;;
 ;;; License: GPLv3
 
-(defvar tabbar-packages '(tabbar)
-  "List of all packages to install and/or initialize. Built-in packages
-which require an initialization must be listed explicitly in the list.")
+(setq tabbar-packages '(tabbar))
+(setq tabbar-excluded-packages '())
 
-(defvar tabbar-excluded-packages '()
-  "List of packages to exclude.")
 
 ;; For each package, define a function tabbar/init-<package-tabbar>
 ;;

@@ -10,17 +10,17 @@
 ;;
 ;;; License: GPLv3
 
-(defvar geiser-pre-extensions
+(setq geiser-pre-extensions
   '(
     ;; pre extension geisers go here
-    )
-  "List of all extensions to load before the packages.")
+    ))
 
-(defvar geiser-post-extensions
+
+(setq geiser-post-extensions
   '(
     ;; post extension geisers go here
-    )
-  "List of all extensions to load after the packages.")
+    ))
+
 
 ;; For each extension, define a function geiser/init-<extension-geiser>
 ;;

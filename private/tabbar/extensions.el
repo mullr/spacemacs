@@ -10,17 +10,17 @@
 ;;
 ;;; License: GPLv3
 
-(defvar tabbar-pre-extensions
+(setq tabbar-pre-extensions
   '(
     ;; pre extension tabbars go here
-    )
-  "List of all extensions to load before the packages.")
+    ))
 
-(defvar tabbar-post-extensions
+
+(setq tabbar-post-extensions
   '(
     ;; post extension tabbars go here
-    )
-  "List of all extensions to load after the packages.")
+    ))
+
 
 ;; For each extension, define a function tabbar/init-<extension-tabbar>
 ;;

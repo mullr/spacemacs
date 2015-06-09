@@ -10,17 +10,15 @@
 ;;
 ;;; License: GPLv3
 
-(defvar geiser-packages
+(setq geiser-packages
   '(
     geiser
     seq
     edn
-    )
-  "List of all packages to install and/or initialize. Built-in packages
-which require an initialization must be listed explicitly in the list.")
+    ))
 
-(defvar geiser-excluded-packages '()
-  "List of packages to exclude.")
+(setq geiser-excluded-packages '())
+
 
 ;; For each package, define a function geiser/init-<package-geiser>
 ;;
