@@ -2,13 +2,22 @@
 
 (defun custom-persp/puppetdb ()
   (interactive)
-  (custom-persp "PDB"
+  (custom-persp "puppetdb"
                 (progn
                   (find-file "~/devel/puppetdb/project.clj")
-                  (add-to-hook 'cider-connected-hook () )
-                  (cider-jack-in)
+                  (add-to-hook 'cider-connected-hook (lambda () (interactive)
+                                                       ;; (split-window-right-and-focus)
+                                                       ;; (switch-to-buffer "*cider-repl puppetdb*")
+                                                       ))
+                  (cider-jack-in))))
 
-                  )))
+
+(defun custom-persp/pe-puppetdb-extensions ()
+  (interactive)
+  (custom-persp "pe-puppetdb-extensions"
+                (progn
+                  (find-file "~/devel/pe-puppetdb-extensions/project.clj"))))
+
 
 (defun custom-persp/spacemacs ()
   (interactive)
@@ -18,6 +27,65 @@
                   (split-window-right)
                   (find-file "~/.emacs.d/dotspacemacs"))))
 
+(setq org-default-notes-file "~/Dropbox/notes/notes.org")
+
+(defun update-notes-perspective ()
+  (interactive)
+
+  (if (string= "notes" (persp-name persp-curr))
+      (progn
+        (select-window-1)
+        (find-file org-default-notes-file)
+
+        (select-window-2)
+        (save-window-excursion
+          (with-output-to-temp-buffer "*pdb-pull-requests*"
+            (async-shell-command "cd /Users/mullr/devel/puppetdb && gh pr | tail -n +3 | sed -e 's/^\([a-zA-Z]\)/\* \1/'"
+                                 "*pdb-pull-requests*" "*Messages*")))
+        (switch-to-buffer "*pdb-pull-requests*")
+        (button-lock-mode)
+        (evil-normal-state)
+
+        (select-window-3)
+        (save-window-excursion
+          (with-output-to-temp-buffer "*pe-pull-requests*"
+            (async-shell-command "cd /Users/mullr/devel/pe-puppetdb-extensions && gh pr | tail -n +3 | sed -e 's/^\([a-zA-Z]\)/\* \1/'"
+                                 "*pe-pull-requests*" "*Messages*")))
+        (switch-to-buffer "*pe-pull-requests*")
+        (button-lock-mode)
+        (evil-normal-state)
+
+        (select-window-4)
+        (save-window-excursion
+          (with-output-to-temp-buffer "*jira-board*"
+            (async-shell-command "cd /Users/mullr/devel/puppetdb-dev-tools/pdbflow && node main.js"
+                                 "*jira-board*" "*Messages*")))
+        (switch-to-buffer "*jira-board*")
+        (button-lock-mode)
+        (evil-normal-state)
+        ;; (org-mode)
+
+        ;; (select-window-4)
+        ;; (save-window-excursion
+        ;;   (with-output-to-temp-buffer "*gcalcli-agenda*"
+        ;;     (async-shell-command "gcalcli agenda --nocolor" "*gcalcli-agenda*" "*Messages*")))
+        ;; (switch-to-buffer "*gcalcli-agenda*")
+
+        ;; (switch-to-buffer-other-window "*scratch* (notes)")
+        ;; (delete-window)
+
+        (select-window-1))))
+
+(defun custom-persp/notes ()
+  (interactive)
+  (custom-persp "notes"
+                (progn
+                  (split-window-right-and-focus)
+                  (split-window-below)
+                  (split-window-below)
+                  (update-notes-perspective)
+                  (global-set-key (kbd "<f5>") #'update-notes-perspective))))
+
 
 (defun dotspacemacs/config ()
   "Configuration function. This function is called at the very
@@ -25,13 +93,11 @@
 
   (setq guide-key/popup-window-position 'right)
 
-  ;; (global-hl-line-mode -1) ; Disable current line highlight
-  (setq org-default-notes-file "~/Dropbox/notes/notes.org")
-  (global-set-key (kbd "<f12>")
-                  (lambda () (interactive) (find-file org-default-notes-file)))
 
-  (global-set-key (kbd "M-(")
-                  (lambda () (interactive) (find-file org-default-notes-file)))
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 80)
+
+  ;; (global-hl-line-mode -1) ; Disable current line highlight
 
   (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
   (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -44,7 +110,32 @@
   (add-hook 'cider-repl-mode-hook       #'enable-paredit-mode)
 
   (evil-leader/set-key "Lop" 'custom-persp/puppetdb)
-  (evil-leader/set-key "Lod" 'custom-persp/spacemacs))
+  (evil-leader/set-key "Loe" 'custom-persp/pe-puppetdb-extensions)
+  (evil-leader/set-key "Los" 'custom-persp/spacemacs)
+  (evil-leader/set-key "Lon" 'custom-persp/notes)
+
+  (global-set-key (kbd "A-<tab>") #'persp-next)
+  (global-set-key (kbd "S-A-<tab>") #'persp-prev)
+
+  (defvar persp-before-notes persp-curr)
+  (global-set-key (kbd "<f12>")
+                  (lambda ()
+                    (interactive)
+                    (if (string= "notes" (persp-name persp-curr))
+                        (progn
+                          (persp-activate persp-before-notes))
+                      (progn
+                        (setq persp-before-notes persp-curr)
+                        (custom-persp/notes)))))
+
+  (add-hook 'persp-activated-hook
+            (lambda ()
+              (interactive)
+              (set-frame-name (concat "Emacs - " (persp-name persp-curr)))))
+
+  (evil-leader/set-key "pp" 'projectile-persp-switch-project)
+  )
+
 
 (defun dotspacemacs/layers ()
   "Configuration Layers declaration."
@@ -58,7 +149,7 @@
    dotspacemacs-configuration-layers
    '(
      clojure
-     (git :variables git-gutter-use-fringe t)
+     (git :variables git-gutter-use-fringe t git-enable-github-support t)
      markdown
      ruby
      javascript
@@ -67,13 +158,14 @@
      tabbar
      syntax-checking
      auto-completion
-     org
+     (org :variables org-enable-github-support t)
      jira-link
      geiser
      emacs-lisp
      better-defaults
      restclient
      (perspectives :variables perspective-enable-persp-projectile t)
+     notmuch
      )
 
    ;; List of additional packages that will be installed wihout being
@@ -90,8 +182,8 @@
 
 (defun dotspacemacs/init ()
   "Initialization function.
-This function is called at the very startup of Spacemacs initialization
-before layers configuration."
+   This function is called at the very startup of Spacemacs
+   initialization before layers configuration."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
@@ -119,8 +211,8 @@ before layers configuration."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         monokai
                          solarized-light
+                         monokai
                          solarized-dark
                          leuven
                          zenburn
@@ -332,6 +424,5 @@ before layers configuration."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((((class color) (min-colors 257)) (:foreground "#F8F8F2" :background "#272822")) (((class color) (min-colors 89)) (:foreground "#F5F5F5" :background "#1B1E1C"))))
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
