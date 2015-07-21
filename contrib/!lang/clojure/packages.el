@@ -191,11 +191,11 @@ the focus."
         "mDf" 'cider-debug-defun-at-point
         )
       (when clojure-enable-fancify-symbols
-        (clojure/fancify-symbols 'cider-repl-mode)))
+        (clojure/fancify-symbols 'cider-repl-mode))
 
-    (when (configuration-layer/package-usedp 'evil-jumper)
-      (defadvice cider-jump-to-var (before add-evil-jump activate)
-        (evil-set-jump))))
+      (when (configuration-layer/package-usedp 'evil-jumper)
+        (defadvice cider-jump-to-var (before add-evil-jump activate)
+          (evil-set-jump))))))
 
 (defun clojure/init-cider-eval-sexp-fu ()
   (eval-after-load 'eval-sexp-fu
