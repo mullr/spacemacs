@@ -5,11 +5,12 @@
   (custom-persp "puppetdb"
                 (progn
                   (find-file "~/devel/puppetdb/project.clj")
-                  (add-to-hook 'cider-connected-hook (lambda () (interactive)
-                                                       ;; (split-window-right-and-focus)
-                                                       ;; (switch-to-buffer "*cider-repl puppetdb*")
-                                                       ))
-                  (cider-jack-in))))
+                  ;; (add-to-hook 'cider-connected-hook (lambda () (interactive)
+                  ;;                                      (split-window-right-and-focus)
+                  ;;                                      (switch-to-buffer "*cider-repl puppetdb*")
+                  ;;                                      ))
+                  ;; (cider-jack-in)
+                  )))
 
 
 (defun custom-persp/pe-puppetdb-extensions ()
@@ -149,7 +150,9 @@
    dotspacemacs-configuration-layers
    '(
      clojure
-     (git :variables git-gutter-use-fringe t git-enable-github-support t)
+     version-control
+     (git :variables git-gutter-use-fringe t)
+     github
      markdown
      ruby
      javascript
