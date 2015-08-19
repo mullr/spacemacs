@@ -3,21 +3,13 @@
 (defun custom-persp/puppetdb ()
   (interactive)
   (custom-persp "puppetdb"
-                (progn
-                  (find-file "~/devel/puppetdb/project.clj")
-                  ;; (add-to-hook 'cider-connected-hook (lambda () (interactive)
-                  ;;                                      (split-window-right-and-focus)
-                  ;;                                      (switch-to-buffer "*cider-repl puppetdb*")
-                  ;;                                      ))
-                  ;; (cider-jack-in)
-                  )))
+                (progn (find-file "~/devel/puppetdb/project.clj"))))
 
 
 (defun custom-persp/pe-puppetdb-extensions ()
   (interactive)
   (custom-persp "pe-puppetdb-extensions"
-                (progn
-                  (find-file "~/devel/pe-puppetdb-extensions/project.clj"))))
+                (progn (find-file "~/devel/pe-puppetdb-extensions/project.clj"))))
 
 
 (defun custom-persp/spacemacs ()
@@ -168,14 +160,19 @@
      better-defaults
      restclient
      (perspectives :variables perspective-enable-persp-projectile t)
-     notmuch
+;;     notmuch
+     latex
+     themes-megapack
+     erc
+     c-c++
+     elixir
      )
 
    ;; List of additional packages that will be installed wihout being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages then consider to create a layer, you can also put the
    ;; configuration in `dotspacemacs/config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(sicp)
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -214,11 +211,9 @@
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(
-                         solarized-light
+                         lush
+                         professional
                          monokai
-                         solarized-dark
-                         leuven
-                         zenburn
                          )
 
    ;; If non nil the cursor color matches the state color.
@@ -335,6 +330,12 @@
  '(ahs-idle-interval 0.25)
  '(ahs-idle-timer 0 t)
  '(ahs-inhibit-face-list nil)
+ '(ansi-color-names-vector
+   ["#3C3836" "#FB4934" "#B8BB26" "#FABD2F" "#83A598" "#D3869B" "#8EC07C" "#EBDBB2"])
+ '(custom-enabled-themes (quote (sanityinc-solarized-light)))
+ '(custom-safe-themes
+   (quote
+    ("4cf3221feff536e2b3385209e9b9dc4c2e0818a69a1cdb4b522756bcdf4e00a4" default)))
  '(elfeed-feeds
    (quote
     ("https://groups.google.com/forum/feed/clojure/msgs/atom.xml?num=50")))
@@ -419,6 +420,8 @@
      ("A" "#+ASCII: " "")
      ("i" "#+INDEX: ?" "#+INDEX: ?")
      ("I" "#+INCLUDE: %file ?" "<include file=%file markup=\"?\">"))))
+ '(pos-tip-background-color "#36473A")
+ '(pos-tip-foreground-color "#FFFFC8")
  '(ring-bell-function (quote ignore) t)
  '(vc-follow-symlinks (quote ask)))
 
@@ -427,5 +430,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Source Code Pro" :foundry "nil" :slant normal :weight normal :height 110 :width normal))))
  '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
  '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
